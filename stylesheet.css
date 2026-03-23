@@ -194,7 +194,7 @@ p.collapsible-abstract {
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
   overflow: hidden;
-  margin-bottom: 6px;
+  margin-bottom: 0;
 }
 
 p.collapsible-abstract.is-expanded {
