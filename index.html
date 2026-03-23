@@ -109,9 +109,7 @@
 										directions for future work.
 									</p>
 									<div style="margin-top:12px;">
-										<div class="youtube-placeholder" data-video-id="VIDEO_ID">
-											<button type="button" class="youtube-play-btn" aria-label="Play video"></button>
-										</div>
+										<button type="button" class="youtube-open-btn" data-video-id="VIDEO_ID">Video</button>
 									</div>
 								</td>
 							</tr>
@@ -515,17 +513,32 @@
 		<img id="image-lightbox-img" src="" alt="Preview image">
 	</div>
 
+	<div id="video-lightbox" class="image-lightbox" aria-hidden="true">
+		<button type="button" class="image-lightbox__close" aria-label="Close video preview">&times;</button>
+		<div class="video-lightbox__content" id="video-lightbox-content"></div>
+	</div>
+
 	<script>
 		(function () {
 			var lightbox = document.getElementById('image-lightbox');
 			var lightboxImg = document.getElementById('image-lightbox-img');
 			var closeBtn = lightbox.querySelector('.image-lightbox__close');
 			var links = document.querySelectorAll('a.image-preview-link');
+			var videoLightbox = document.getElementById('video-lightbox');
+			var videoContent = document.getElementById('video-lightbox-content');
+			var videoCloseBtn = videoLightbox.querySelector('.image-lightbox__close');
+			var videoButtons = document.querySelectorAll('button.youtube-open-btn');
 
 			function closeLightbox() {
 				lightbox.classList.remove('is-open');
 				lightbox.setAttribute('aria-hidden', 'true');
 				lightboxImg.src = '';
+			}
+
+			function closeVideoLightbox() {
+				videoLightbox.classList.remove('is-open');
+				videoLightbox.setAttribute('aria-hidden', 'true');
+				videoContent.innerHTML = '';
 			}
 
 			links.forEach(function (link) {
@@ -548,6 +561,9 @@
 			document.addEventListener('keydown', function (event) {
 				if (event.key === 'Escape' && lightbox.classList.contains('is-open')) {
 					closeLightbox();
+				}
+				if (event.key === 'Escape' && videoLightbox.classList.contains('is-open')) {
+					closeVideoLightbox();
 				}
 			});
 
@@ -572,22 +588,28 @@
 				}
 			});
 
-			var youtubeContainers = document.querySelectorAll('.youtube-placeholder');
-			youtubeContainers.forEach(function (container) {
-				var playBtn = container.querySelector('.youtube-play-btn');
-				var videoId = container.getAttribute('data-video-id');
-
-				playBtn.addEventListener('click', function () {
+			videoButtons.forEach(function (button) {
+				button.addEventListener('click', function () {
+					var videoId = button.getAttribute('data-video-id');
 					var iframe = document.createElement('iframe');
 					iframe.setAttribute('src', 'https://www.youtube.com/embed/' + videoId + '?autoplay=1');
 					iframe.setAttribute('title', 'YouTube video player');
-					iframe.setAttribute('frameborder', '0');
 					iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share');
 					iframe.setAttribute('allowfullscreen', '');
 
-					container.innerHTML = '';
-					container.appendChild(iframe);
+					videoContent.innerHTML = '';
+					videoContent.appendChild(iframe);
+					videoLightbox.classList.add('is-open');
+					videoLightbox.setAttribute('aria-hidden', 'false');
 				});
+			});
+
+			videoCloseBtn.addEventListener('click', closeVideoLightbox);
+
+			videoLightbox.addEventListener('click', function (event) {
+				if (event.target === videoLightbox) {
+					closeVideoLightbox();
+				}
 			});
 		})();
 	</script>
